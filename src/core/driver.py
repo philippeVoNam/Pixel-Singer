@@ -37,5 +37,4 @@ class Driver:
 
             while pygame.mixer.music.get_busy():
                 time = ((pygame.mixer.music.get_pos() / 1000) * 100) / song.get_length()
-                print(time)
                 pygame.time.Clock().tick(10)
