@@ -2,26 +2,46 @@
 # date   : Mon 04 Jul 2022 02:22:56 PM
 
 # 3rd party imports
-from musixmatch import Musixmatch
-import lyricsgenius
-import json
+from youtubesearchpython import VideosSearch
+import youtube_dl
 # user imports
 from src.core.driver import Driver
 from src.tools.lyrics import save_lyrics_into_mp3
 
-songFilePath = input("song file [drag & drop file] : ").strip()
-save_lyrics_into_mp3(songFilePath)
+videosSearch = VideosSearch('Wondering Olivia Rodrigo', limit = 3)
 
-# token = "QW6XBQQ0SDzgs-4Fw6r97-ZE6vJguhpFX0SidG99ZA9sO4n5QiEs2InWwh6jokYV"
-# genius = lyricsgenius.Genius(token)
-# artist = genius.search_artist("Olivia Rodrigo", max_songs=0)
-# song = artist.song("Wondering")
-# print(song.lyrics)
+results = videosSearch.result()['result']
+for result in results:
+    print(result["title"], result["link"])
 
-# musixmatch = Musixmatch('03efeb192b853b8894a5bbb26b3454d0')
-# lyrics = musixmatch.matcher_lyrics_get('Wondering', 'Olivia Rodrigo')
-# print(lyrics)
-# print(lyrics['message']['body']['lyrics']['lyrics_body'])
+# to get the destination filename after downloading using youtube_dl
+class FilenameCollectorPP(youtube_dl.postprocessor.common.PostProcessor):
+    def __init__(self):
+        super(FilenameCollectorPP, self).__init__(None)
+        self.filenames = []
 
-# driver = Driver()
-# driver.run(songFilePath)
+    def run(self, information):
+        self.filenames.append(information['filepath'])
+        return [], information
+filename_collector = FilenameCollectorPP()
+
+urlLink = result["link"]
+ydl_opts = {
+    'format': 'bestaudio/best',
+    'postprocessors': [{
+        'key': 'FFmpegExtractAudio',
+        'preferredcodec': 'mp3',
+        'preferredquality': '192',
+    }
+    ,{
+        'key': 'FFmpegMetadata'
+    }
+    ],
+}
+
+with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+    ydl.add_post_processor(filename_collector)
+    ydl.download([urlLink])
+    destinationFilePath = filename_collector.filenames[0]
+
+save_lyrics_into_mp3(destinationFilePath)
