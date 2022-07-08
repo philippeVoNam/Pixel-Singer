@@ -7,6 +7,7 @@ import threading
 import time
 import eyed3
 import yt_dlp
+from pathlib import Path
 from youtubesearchpython import VideosSearch
 # user imports
 from src.core.driver import Driver
@@ -23,21 +24,13 @@ resultsTitle = []
 for result in results:
     resultsTitle.append(result["title"])
 
-# to get the destination filename after downloading using yt_dlp
-class FilenameCollectorPP(yt_dlp.postprocessor.common.PostProcessor):
-    def __init__(self):
-        super(FilenameCollectorPP, self).__init__(None)
-        self.filenames = []
-
-    def run(self, information):
-        self.filenames.append(information['filepath'])
-        return [], information
-filename_collector = FilenameCollectorPP()
-
 idxChoose = get_user_choice(resultsTitle, "choose which link : ")
 urlLink = results[idxChoose]["link"]
+outputFolder = "output"
+mp3FilePath = str(Path(outputFolder) / "{}-{}.mp3".format(title, artist))
 ydl_opts = {
-    'format': 'worstaudio/worst',
+    'outtmpl': mp3FilePath,
+    'format': 'bestaudio/best',
     'postprocessors': [{
         'key': 'FFmpegExtractAudio',
         'preferredcodec': 'mp3',
@@ -50,13 +43,11 @@ ydl_opts = {
 }
 
 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-    ydl.add_post_processor(filename_collector)
     ydl.download([urlLink])
-    mp3FilePath = filename_collector.filenames[0]
 
 save_lyrics_into_mp3(artist, title, mp3FilePath)
 
-# get lrc and mp3 file
+# # get lrc and mp3 file
 with open(mp3FilePath, "r") as f:
     track = eyed3.load(mp3FilePath)
     tag = track.tag
