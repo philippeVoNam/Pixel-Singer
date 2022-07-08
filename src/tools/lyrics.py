@@ -9,6 +9,10 @@ import requests
 import os
 import re
 import eyed3
+from difflib import SequenceMatcher
+
+def string_similar(strA, strB):
+    return SequenceMatcher(None, strA.lower(), strB.lower()).ratio()
 
 def lyricsify_find_song_lyrics(query):
     """
@@ -16,21 +20,30 @@ def lyricsify_find_song_lyrics(query):
     If not found, return None.
     """
     # Search Lyricsify for the song using web scraping
-    link = BeautifulSoup(
+    links = BeautifulSoup(
         requests.get(url="https://www.lyricsify.com/search?q=" +
                      query.replace(
                          " - ", "+").replace(" ", "+"),
                      headers={
                          "User-Agent": ""
                      }).text,
-        "html.parser").find("a", class_="title")
+        "html.parser").find_all("a", class_="title")
+
+    # check how similiar the link text is to the query (aka title and artist of the song)
+    linkWithHighestSimiliarity = ""
+    highestSimiliarScore = 0
+    for link in links:
+        similiarScore = string_similar(query, link.text)
+        if similiarScore > highestSimiliarScore:
+            highestSimiliarScore = similiarScore
+            linkWithHighestSimiliarity = link
 
     # If not found, return None
-    if link is None:
+    if linkWithHighestSimiliarity is None:
         return None
     # Scrape the song URL for the lyrics text
     song_html = BeautifulSoup(
-        requests.get(url="https://www.lyricsify.com" + link.attrs['href'],
+        requests.get(url="https://www.lyricsify.com" + linkWithHighestSimiliarity.attrs['href'],
                      headers={
             "User-Agent": ""
         }).text,

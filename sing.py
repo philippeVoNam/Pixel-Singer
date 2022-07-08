@@ -71,12 +71,6 @@ startTime = time.time()
 printNextLine = False
 while True:
     elapsedTime = time.time() - startTime
-    if elapsedTime > subs[line+1].time:
-        printNextLine = True
-        line = line + 1
-
-    else:
-        printNextLine = False
-
-    if printNextLine:
+    if elapsedTime > subs[line].time:
         print(subs[line].text.rstrip() + " " * (60 - len(subs[line].text)))
+        line = line + 1
