@@ -1,7 +1,7 @@
 # Pixel Singer
 Listen to your favorite songs with synced lyrics !
 
-# Requirements
+## Requirements
 - python version 3
 
 ## Quickstart
