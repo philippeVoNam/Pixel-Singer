@@ -20,7 +20,7 @@ mh = MusicBrainzngsHelper()
 artist = input("artist : ").strip()
 artist, mostLikelyArtistID = mh.get_most_likely_artist(artist)
 title = input("title : ").strip()
-title = mh.get_most_likely_song(mostLikelyArtistID, title)
+# title = mh.get_most_likely_song(mostLikelyArtistID, title) # FIXME : the time to search is still too long ...
 songSearch = "{} - {}".format(title, artist)
 print(songSearch)
 videosSearch = VideosSearch(songSearch, limit = 5)

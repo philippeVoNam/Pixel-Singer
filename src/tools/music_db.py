@@ -35,7 +35,7 @@ class MusicBrainzngsHelper:
 
     def get_most_likely_song(self, searchArtistID, searchSong):
         recordings = []
-        pages = 3
+        pages = 10
         limitNum = 100
         for i in range(pages):
             self.get_recordings(searchArtistID, recordings, limitNum, i * limitNum)
