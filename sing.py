@@ -13,11 +13,17 @@ from youtubesearchpython import VideosSearch
 from src.core.driver import Driver
 from src.tools.lyrics import save_lyrics_into_mp3
 from src.tools.setup_tools import get_user_choice
+from src.tools.music_db import MusicBrainzngsHelper
 
-title = input("title : ").strip()
+mh = MusicBrainzngsHelper()
+
 artist = input("artist : ").strip()
+artist, mostLikelyArtistID = mh.get_most_likely_artist(artist)
+title = input("title : ").strip()
+title = mh.get_most_likely_song(mostLikelyArtistID, title)
 songSearch = "{} - {}".format(title, artist)
-videosSearch = VideosSearch(songSearch, limit = 3)
+print(songSearch)
+videosSearch = VideosSearch(songSearch, limit = 5)
 
 results = videosSearch.result()['result']
 resultsTitle = []
