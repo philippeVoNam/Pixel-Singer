@@ -18,3 +18,6 @@ def get_most_likely_str(target, options):
             mostLikelyStrIdx = idx
 
     return mostLikelyStrIdx
+
+def print_center(msg: str, columns):
+    print(msg.center(columns))
