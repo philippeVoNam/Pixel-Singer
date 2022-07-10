@@ -1,6 +1,9 @@
 # Pixel Singer
 Listen to your favorite songs with synced lyrics !
 
+![choosing](res/input.png)
+![lyrics](res/lyrics.png)
+
 ## Requirements
 - python version 3
 
