@@ -1,3 +1,6 @@
+# edit author : Philippe Vo
+# date   : Mon 02 May 2022 07:24:29 PM
+
 # forked code from https://github.com/ImranR98/AutoLyricize
 
 # 3rd party imports
@@ -9,10 +12,8 @@ import requests
 import os
 import re
 import eyed3
-from difflib import SequenceMatcher
-
-def string_similar(strA, strB):
-    return SequenceMatcher(None, strA.lower(), strB.lower()).ratio()
+# user imports
+from src.tools.general_tools import string_similar, get_most_likely_str
 
 def lyricsify_find_song_lyrics(query):
     """
@@ -30,13 +31,12 @@ def lyricsify_find_song_lyrics(query):
         "html.parser").find_all("a", class_="title")
 
     # check how similiar the link text is to the query (aka title and artist of the song)
-    linkWithHighestSimiliarity = ""
-    highestSimiliarScore = 0
+    linksTexts = []
     for link in links:
-        similiarScore = string_similar(query, link.text)
-        if similiarScore > highestSimiliarScore:
-            highestSimiliarScore = similiarScore
-            linkWithHighestSimiliarity = link
+        linksTexts.append(link.text)
+
+    mostLikelyIdx = get_most_likely_str(query, linksTexts)
+    linkWithHighestSimiliarity = links[mostLikelyIdx]
 
     # If not found, return None
     if linkWithHighestSimiliarity is None:
