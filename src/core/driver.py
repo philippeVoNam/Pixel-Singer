@@ -2,6 +2,9 @@
 # date   : Mon 04 Jul 2022 02:22:56 PM
 
 # 3rd party imports
+import os
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
+
 import logging
 import pygame
 from pathlib import Path
